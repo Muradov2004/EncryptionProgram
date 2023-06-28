@@ -13,7 +13,7 @@ class Encrypter
     public char Encrypt(char Character)
     {
 
-        Character |= (char)EncryptionKey;
+        Character ^= (char)EncryptionKey;
         return Character;
     }
 }

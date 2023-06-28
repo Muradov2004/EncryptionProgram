@@ -58,27 +58,59 @@ public partial class MainWindow : UiWindow
 
     private void StartButton_Click(object sender, RoutedEventArgs e)
     {
-        if (File.Exists(FilePathTxtBox.Text))
+        try
         {
-            string text = File.ReadAllText(FilePathTxtBox.Text);
-            Encrypter encrypter = new Encrypter()
+            if (File.Exists(FilePathTxtBox.Text))
             {
-                EncryptionKey = Convert.ToInt32(PswrdBox.Password)
-            };
-            Thread thread = new Thread(
-                () =>
+                CancelButton.IsEnabled = true;
+                string text = File.ReadAllText(FilePathTxtBox.Text);
+                Encrypter encrypter = new Encrypter()
                 {
-                    for (int i = 0; i < text.Length; i++)
+                    EncryptionKey = Convert.ToInt32(PswrdBox.Password)
+                };
+                EncryptionProgressBar.Maximum = text.Length;
+                Thread thread = new Thread(
+                    () =>
                     {
-                        StringBuilder @string = new StringBuilder(text);
-                        @string[i] = encrypter.Encrypt(text[i]);
-                        text = @string.ToString();
-                        File.WriteAllText(FilePathTxtBox.Text, text);
-                        EncryptionProgressBar.Value += 1;
-                    }
-                });
+                        for (int i = 0; i < text.Length; i++)
+                        {
+                            StringBuilder @string = new StringBuilder(text);
+                            @string[i] = encrypter.Encrypt(text[i]);
+                            text = @string.ToString();
+                            Dispatcher.Invoke(() =>
+                            {
+                                File.WriteAllText(FilePathTxtBox.Text, text);
+                                EncryptionProgressBar.Value += 1;
+                            });
+                            Thread.Sleep(50);
+                        }
+                        System.Windows.MessageBox.Show("File encrypted succesfully", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
 
-
+                        Dispatcher.Invoke(() =>
+                        {
+                            EncryptionProgressBar.Value = 0;
+                            FilePathTxtBox.Clear();
+                            PswrdBox.Clear();
+                            CancelButton.IsEnabled = false;
+                        });
+                    });
+                thread.Start();
+            }
+            else
+            {
+                throw new NotImplementedException("File path not exist");
+            }
         }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            FilePathTxtBox.Clear();
+            PswrdBox.Clear();
+        }
+    }
+
+    private void CancelButton_Click(object sender, RoutedEventArgs e)
+    {
+
     }
 }

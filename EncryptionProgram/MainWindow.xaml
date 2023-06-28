@@ -43,7 +43,7 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <ui:Button Name="StartButton" Grid.Column="1" Height="40" Width="80" HorizontalAlignment="Center" Content="Start"  Appearance="Info" IsEnabled="False" Click="StartButton_Click"/>
-                <ui:Button Name="CancelButton" Grid.Column="2" Height="40" Width="80" HorizontalAlignment="Center" Content="Cancel" Appearance="Danger" IsEnabled="False"/>
+                <ui:Button Name="CancelButton" Grid.Column="2" Height="40" Width="80" HorizontalAlignment="Center" Content="Cancel" Appearance="Danger" IsEnabled="False" Click="CancelButton_Click"/>
 
             </Grid>
         </Grid>
