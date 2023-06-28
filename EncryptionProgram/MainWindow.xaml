@@ -31,7 +31,7 @@
                 <ui:TextBox Name="FilePathTxtBox" Grid.Column="1" Width="340" PlaceholderEnabled="True" PlaceholderText="File Path"/>
             </Grid>
             <Grid Grid.Row="1">
-                <ui:PasswordBox PlaceholderText="Password" Width="250" MaxLength="10"/>
+                <ui:PasswordBox PlaceholderText="Password" Width="250" MaxLength="10" PreviewTextInput="NumericPasswordBox_PreviewTextInput"/>
             </Grid>
             <Grid Grid.Row="2">
                 <ProgressBar Width="450" Height="25" Value="50"/>
