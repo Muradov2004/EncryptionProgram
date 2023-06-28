@@ -25,16 +25,16 @@
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="3*" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Height="40" Width="80" HorizontalAlignment="Center" Content="File..."/>
-                <ui:TextBox Grid.Column="1" Width="240" PlaceholderEnabled="True" PlaceholderText="File Path"/>
+                <ui:Button Grid.Column="0" Height="38" Width="80" HorizontalAlignment="Center" Content="File..." Appearance="Caution" Click="DialogButton_Click"/>
+                <ui:TextBox Name="FilePathTxtBox" Grid.Column="1" Width="340" PlaceholderEnabled="True" PlaceholderText="File Path"/>
             </Grid>
             <Grid Grid.Row="1">
-                <ui:PasswordBox PlaceholderText="Password" Width="250"/>
+                <ui:PasswordBox PlaceholderText="Password" Width="250" MaxLength="10"/>
             </Grid>
             <Grid Grid.Row="2">
-                <ProgressBar Width="450" Height="30" Value="50"/>
+                <ProgressBar Width="450" Height="25" Value="50"/>
             </Grid>
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
@@ -42,8 +42,8 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="1" Height="40" Width="80" HorizontalAlignment="Center" Content="Start" />
-                <Button Grid.Column="2" Height="40" Width="80" HorizontalAlignment="Center" Content="Cancel"/>
+                <ui:Button Grid.Column="1" Height="40" Width="80" HorizontalAlignment="Center" Content="Start"  Appearance="Info"/>
+                <ui:Button Grid.Column="2" Height="40" Width="80" HorizontalAlignment="Center" Content="Cancel" Appearance="Danger"/>
 
             </Grid>
         </Grid>
