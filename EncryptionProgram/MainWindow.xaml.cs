@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 using System;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EncryptionProgram;
 
@@ -16,6 +17,8 @@ namespace EncryptionProgram;
 /// </summary>
 public partial class MainWindow : UiWindow
 {
+    CancellationTokenSource? cancellationTokenSource;
+    CancellationToken cancellationToken;
     public MainWindow()
     {
         InitializeComponent();
@@ -55,13 +58,15 @@ public partial class MainWindow : UiWindow
         if (FilePathTxtBox.Text != string.Empty) StartButton.IsEnabled = true;
         else StartButton.IsEnabled = false;
     }
-
+    int index = 0;
     private void StartButton_Click(object sender, RoutedEventArgs e)
     {
         try
         {
             if (File.Exists(FilePathTxtBox.Text))
             {
+                cancellationTokenSource = new CancellationTokenSource();
+                cancellationToken = cancellationTokenSource.Token;
                 CancelButton.IsEnabled = true;
                 string text = File.ReadAllText(FilePathTxtBox.Text);
                 Encrypter encrypter = new Encrypter()
@@ -72,7 +77,8 @@ public partial class MainWindow : UiWindow
                 Thread thread = new Thread(
                     () =>
                     {
-                        for (int i = 0; i < text.Length; i++)
+
+                        for (int i = 0; i < text.Length && !cancellationToken.IsCancellationRequested; i++)
                         {
                             StringBuilder @string = new StringBuilder(text);
                             @string[i] = encrypter.Encrypt(text[i]);
@@ -80,19 +86,24 @@ public partial class MainWindow : UiWindow
                             Dispatcher.Invoke(() =>
                             {
                                 File.WriteAllText(FilePathTxtBox.Text, text);
-                                EncryptionProgressBar.Value += 1;
+                                EncryptionProgressBar.Value++;
                             });
-                            Thread.Sleep(50);
+                            index = i;
+                            Thread.Sleep(20);
                         }
-                        System.Windows.MessageBox.Show("File encrypted succesfully", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                        Dispatcher.Invoke(() =>
+                        if (!cancellationToken.IsCancellationRequested)
                         {
-                            EncryptionProgressBar.Value = 0;
-                            FilePathTxtBox.Clear();
-                            PswrdBox.Clear();
-                            CancelButton.IsEnabled = false;
-                        });
+                            System.Windows.MessageBox.Show("File encrypted succesfully", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                            Dispatcher.Invoke(() =>
+                            {
+                                EncryptionProgressBar.Value = 0;
+                                FilePathTxtBox.Clear();
+                                PswrdBox.Clear();
+                                CancelButton.IsEnabled = false;
+                            });
+                            cancellationTokenSource.Cancel();
+                        }
+
                     });
                 thread.Start();
             }
@@ -111,6 +122,37 @@ public partial class MainWindow : UiWindow
 
     private void CancelButton_Click(object sender, RoutedEventArgs e)
     {
+        cancellationTokenSource!.Cancel();
+        string text = File.ReadAllText(FilePathTxtBox.Text);
+        Encrypter encrypter = new Encrypter()
+        {
+            EncryptionKey = Convert.ToInt32(PswrdBox.Password)
+        };
+        StartButton.IsEnabled = false;
+        Thread thread = new Thread(
+            () =>
+            {
+                for (int i = index; i >= 0; i--)
+                {
+                    StringBuilder @string = new StringBuilder(text);
+                    @string[i] = encrypter.Encrypt(text[i]);
+                    text = @string.ToString();
+                    Dispatcher.Invoke(() =>
+                    {
+                        File.WriteAllText(FilePathTxtBox.Text, text);
+                        EncryptionProgressBar.Value--;
+                    });
+                    Thread.Sleep(20);
+                }
+                System.Windows.MessageBox.Show("Process cancelled", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                Dispatcher.Invoke(() =>
+                {
+                    FilePathTxtBox.Clear();
+                    PswrdBox.Clear();
+                    CancelButton.IsEnabled = false;
+                });
+            });
+        thread.Start();
 
     }
 }
