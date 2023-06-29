@@ -14,7 +14,7 @@
             <RowDefinition Height="35"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <ui:TitleBar ShowMaximize="False"/>
+        <ui:TitleBar ShowMaximize="False" />
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
